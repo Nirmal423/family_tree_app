@@ -4,7 +4,6 @@ import sqlite3
 import os
 import base64
 import json
-import colorsys
 from datetime import datetime
 
 DB_PATH = "family_tree.db"
@@ -143,20 +142,18 @@ def save_uploaded_photo(photo_file):
     img.save(path)
     return path
 
-# Relationship label inference (for card subtitle)
 def infer_role_label(pid, rels):
     for rt, p1, p2 in rels:
         if rt == "spouse-of" and (p1 == pid or p2 == pid):
             return "Partner"
     return ""
 
-# Branch color assignment: walk from each root, assign a hue per root
 BRANCH_PALETTE = [
-    ("#FF8C69", "#FFE3D6"),  # coral
-    ("#7EC8E3", "#DCF0F8"),  # sky
-    ("#B8A6E0", "#EAE3F7"),  # lavender
-    ("#8FD9C4", "#DFF5EE"),  # mint
-    ("#FFD166", "#FFF3D6"),  # yellow
+    ("#FF8C69", "#FFE3D6"),
+    ("#7EC8E3", "#DCF0F8"),
+    ("#B8A6E0", "#EAE3F7"),
+    ("#8FD9C4", "#DFF5EE"),
+    ("#FFD166", "#FFF3D6"),
 ]
 
 def compute_branch_colors(people, rels):
@@ -247,7 +244,6 @@ html, body, [class*="css"] { font-family: 'Plus Jakarta Sans', sans-serif !impor
 .block-container { padding-top: 0.5rem !important; padding-bottom: 5rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
 
-/* ---- explicit contrast fixes for Streamlit-native widgets ---- */
 label, .stTextInput label, .stTextArea label, .stSelectbox label, .stFileUploader label {
     color: var(--navy) !important; font-weight: 600 !important; font-size: 0.88rem !important;
 }
@@ -262,7 +258,6 @@ div[data-baseweb="select"] * { color: var(--navy) !important; }
 .stFileUploader section * { color: var(--navy-soft) !important; }
 .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 { color: var(--navy) !important; }
 
-/* ---- minimal header ---- */
 .top-bar {
     display:flex; align-items:center; justify-content:space-between; padding: 10px 14px;
     background:white; border-radius:16px; margin: 0 4px 6px 4px; box-shadow:0 2px 10px rgba(27,42,74,0.06);
@@ -270,7 +265,6 @@ div[data-baseweb="select"] * { color: var(--navy) !important; }
 .top-bar .brand { font-size:1.05rem; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px; }
 .top-bar .search-icon { font-size:1.15rem; opacity:0.55; }
 
-/* ---- floating action button ---- */
 .fab {
     position:fixed; right:22px; bottom:88px; width:56px; height:56px; border-radius:50%;
     background:linear-gradient(135deg, var(--coral), var(--coral-deep)); color:white !important;
@@ -289,7 +283,6 @@ div[data-baseweb="select"] * { color: var(--navy) !important; }
 .bottom-nav a.active { opacity:1; color:var(--coral-deep) !important; }
 @media (min-width: 900px) { .bottom-nav { display:none; } .fab { bottom:32px; } }
 
-/* ---- relation-type choice cards ---- */
 .choice-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap:14px; margin: 18px 0 6px 0; }
 .choice-card {
     background:linear-gradient(155deg, #ffffff, #FFF6EE); border-radius:20px; padding:24px 10px; text-align:center;
@@ -461,7 +454,7 @@ def build_tree_html(people, rels, selected_id, just_added, stats):
 <head>
 <meta charset="utf-8"/>
 <style>
-  html, body { margin:0; padding:0; overflow:hidden; background:transparent; font-family:'Plus Jakarta Sans', sans-serif; }
+  html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent; font-family:'Plus Jakarta Sans', sans-serif; }
   svg { width:100%; height:100%; cursor:grab; display:block; }
   svg:active { cursor:grabbing; }
   .link-parent { stroke-width:2.5px; fill:none; }
@@ -529,6 +522,13 @@ let allLaidOut = [];
 let offsetX = 50;
 const NODE_W = 160, NODE_H = 190;
 
+function buildHierarchy(id, visited) {
+  visited = visited || new Set();
+  if (visited.has(id)) return { id: id, children: [] };
+  visited.add(id);
+  return { id: id, children: (childrenMap[id] || []).map(c => buildHierarchy(c, visited)) };
+}
+
 roots.forEach(root => {
   const hierarchyData = buildHierarchy(root.id);
   const rootH = d3.hierarchy(hierarchyData);
@@ -539,8 +539,6 @@ roots.forEach(root => {
   rootH.each(d => { allLaidOut.push({ id: d.data.id, x: d.x - minX + offsetX, y: d.depth * 200 + 70 }); });
   offsetX += (maxX - minX) + 240;
 });
-
-function buildHierarchy(id) { return { id: id, children: (childrenMap[id] || []).map(buildHierarchy) }; }
 
 const posById = {};
 allLaidOut.forEach(d => posById[d.id] = d);
