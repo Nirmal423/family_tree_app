@@ -84,6 +84,22 @@ def get_all_persons():
     conn.close()
     return rows
 
+def delete_person(person_id):
+    p = get_person(person_id)
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("DELETE FROM relationships WHERE person1_id=? OR person2_id=?", (person_id, person_id))
+    c.execute("DELETE FROM persons WHERE id=?", (person_id,))
+    conn.commit()
+    conn.close()
+    if p:
+        photo_path = p[7]
+        if photo_path and os.path.exists(photo_path):
+            try:
+                os.remove(photo_path)
+            except OSError:
+                pass
+
 def get_person(person_id):
     conn = get_conn()
     c = conn.cursor()
@@ -322,6 +338,46 @@ div.stButton > button p { color: white !important; }
 .wizard-sub { color:var(--navy-soft) !important; font-size:0.9rem; margin-top:-6px; margin-bottom:4px; }
 </style>
 """, unsafe_allow_html=True)
+
+# =========================================================
+# DELETE CONFIRMATION
+# =========================================================
+
+def render_delete_confirm():
+    p = get_person(for_param)
+    if not p:
+        st.error("Person not found — they may have already been removed.")
+        if st.button("← Back to tree"):
+            st.query_params.clear()
+            st.rerun()
+        return
+    pid, first, last, birth, loc, bio, interests, photo, created = p
+    img = get_avatar_src(photo, first, last)
+    full_name = f"{first} {last or ''}".strip()
+
+    st.markdown(f"""
+    <div style="max-width:420px;margin:40px auto 8px auto;text-align:center;background:white;
+        border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(27,42,74,0.1); border:1px solid #EFE7DA;">
+      <img src="{img}" style="width:88px;height:88px;border-radius:20px;object-fit:cover;
+          box-shadow:0 4px 12px rgba(27,42,74,0.15);margin-bottom:16px;"/>
+      <h3 style="color:#1B2A4A !important;margin:0 0 8px 0;">Remove {full_name} from the tree?</h3>
+      <p style="color:#4A5670 !important;font-size:0.9rem;line-height:1.5;margin:0;">
+        This also removes their connections to other family members. This can't be undone.
+      </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Cancel", use_container_width=True):
+            st.query_params.clear()
+            st.query_params["selected"] = str(pid)
+            st.rerun()
+    with col2:
+        if st.button("🗑️ Yes, delete", use_container_width=True):
+            delete_person(pid)
+            st.query_params.clear()
+            st.rerun()
 
 # =========================================================
 # DATA
@@ -582,14 +638,53 @@ allLaidOut.forEach(d => {
   editUrl.searchParams.set("for", d.id);
   editUrl.searchParams.delete("selected");
 
+  const deleteUrl = new URL(parentBaseUrl.toString());
+  deleteUrl.searchParams.set("action", "delete");
+  deleteUrl.searchParams.set("for", d.id);
+  deleteUrl.searchParams.delete("selected");
+
   const link = nodeGroup.append("a")
     .attr("href", editUrl.toString())
-    .attr("target", "_top");
+    .attr("target", "_top")
+    .style("-webkit-touch-callout", "none")
+    .style("-webkit-user-select", "none")
+    .style("user-select", "none");
 
   const grp = link.append("g")
     .attr("class", "node-card" + (isSelected ? " selected" : "") + (isFaded ? " faded" : ""))
     .attr("transform", `translate(${d.x - 65}, ${d.y - 90}) scale(${isNew ? 0.2 : 1})`)
     .style("opacity", isNew ? 0 : 1);
+
+  let pressTimer = null, longPressed = false, startX = 0, startY = 0;
+  const LONG_PRESS_MS = 550;
+
+  const clearPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
+
+  link.on("pointerdown", (event) => {
+    longPressed = false;
+    startX = event.clientX; startY = event.clientY;
+    clearPress();
+    pressTimer = setTimeout(() => {
+      longPressed = true;
+      grp.select(".card-bg").transition().duration(120).attr("transform", "scale(0.94)");
+      window.top.location.href = deleteUrl.toString();
+    }, LONG_PRESS_MS);
+  }).on("pointermove", (event) => {
+    const dx = Math.abs(event.clientX - startX);
+    const dy = Math.abs(event.clientY - startY);
+    if (dx > 10 || dy > 10) clearPress();
+  }).on("pointerup", () => {
+    clearPress();
+  }).on("pointercancel", () => {
+    clearPress();
+  }).on("contextmenu", (event) => {
+    event.preventDefault();
+  }).on("click", (event) => {
+    if (longPressed) {
+      event.preventDefault();
+      longPressed = false;
+    }
+  });
 
   const g2 = grp.append("g").attr("class", "card-bg");
   g2.append("rect").attr("width", 130).attr("height", 172).attr("rx", 20).attr("fill", "white")
@@ -696,7 +791,9 @@ def render_profile_drawer(person_id):
 # MAIN ROUTING
 # =========================================================
 
-if action == "add" or action == "edit":
+if action == "delete":
+    render_delete_confirm()
+elif action == "add" or action == "edit":
     render_wizard()
 elif len(people) == 0:
     st.markdown("""
