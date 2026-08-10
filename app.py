@@ -404,6 +404,24 @@ st.markdown("""
 
 def render_wizard():
     editing = action == "edit" and for_param
+
+    if st.session_state.get("just_saved"):
+        saved_id = st.session_state.pop("just_saved")
+        saved_name = st.session_state.pop("just_saved_name", "")
+        was_new = st.session_state.pop("just_saved_new", False)
+        st.markdown(f"""
+        <div style="max-width:420px;margin:40px auto 8px auto;text-align:center;background:white;
+            border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(27,42,74,0.1); border:1px solid #EFE7DA;">
+          <div style="font-size:2.2rem;margin-bottom:8px;">{"✨" if was_new else "💾"}</div>
+          <h3 style="color:#1B2A4A !important;margin:0 0 8px 0;">{saved_name} {"joined the tree" if was_new else "has been updated"}</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("← Back to Family Tree", use_container_width=True):
+            st.query_params.clear()
+            st.query_params["selected"] = str(saved_id)
+            st.rerun()
+        return
+
     edit_person = get_person(for_param) if editing else None
 
     if not editing and not for_param and rel_param is None and len(people) > 0:
@@ -450,8 +468,9 @@ def render_wizard():
                 photo_path = save_uploaded_photo(photo_file)
                 if editing:
                     update_person(for_param, first_name, last_name, birth_date, location, bio, interests, photo_path)
-                    st.query_params.clear()
-                    st.query_params["selected"] = str(for_param)
+                    st.session_state.just_saved = for_param
+                    st.session_state.just_saved_name = f"{first_name} {last_name or ''}".strip()
+                    st.session_state.just_saved_new = False
                     st.rerun()
                 else:
                     new_id = add_person(first_name, last_name, birth_date, location, bio, interests, photo_path)
@@ -465,15 +484,28 @@ def render_wizard():
                         elif rel_param == "sibling":
                             add_relationship(for_param, new_id, "sibling-of")
                     st.session_state.just_added = new_id
-                    st.query_params.clear()
-                    st.query_params["selected"] = str(new_id)
-                    st.markdown(f'<div class="success-banner">✨ {first_name} joined your family</div>', unsafe_allow_html=True)
-                    st.balloons()
+                    st.session_state.just_saved = new_id
+                    st.session_state.just_saved_name = f"{first_name} {last_name or ''}".strip()
+                    st.session_state.just_saved_new = True
                     st.rerun()
 
-    if st.button("← Cancel"):
-        st.query_params.clear()
-        st.rerun()
+    if editing:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("← Cancel", use_container_width=True):
+                st.query_params.clear()
+                st.query_params["selected"] = str(for_param)
+                st.rerun()
+        with col2:
+            if st.button("🗑️ Delete Person", use_container_width=True):
+                st.query_params.clear()
+                st.query_params["action"] = "delete"
+                st.query_params["for"] = str(for_param)
+                st.rerun()
+    else:
+        if st.button("← Cancel"):
+            st.query_params.clear()
+            st.rerun()
 
 # =========================================================
 # TREE CANVAS
@@ -638,53 +670,14 @@ allLaidOut.forEach(d => {
   editUrl.searchParams.set("for", d.id);
   editUrl.searchParams.delete("selected");
 
-  const deleteUrl = new URL(parentBaseUrl.toString());
-  deleteUrl.searchParams.set("action", "delete");
-  deleteUrl.searchParams.set("for", d.id);
-  deleteUrl.searchParams.delete("selected");
-
   const link = nodeGroup.append("a")
     .attr("href", editUrl.toString())
-    .attr("target", "_top")
-    .style("-webkit-touch-callout", "none")
-    .style("-webkit-user-select", "none")
-    .style("user-select", "none");
+    .attr("target", "_top");
 
   const grp = link.append("g")
     .attr("class", "node-card" + (isSelected ? " selected" : "") + (isFaded ? " faded" : ""))
     .attr("transform", `translate(${d.x - 65}, ${d.y - 90}) scale(${isNew ? 0.2 : 1})`)
     .style("opacity", isNew ? 0 : 1);
-
-  let pressTimer = null, longPressed = false, startX = 0, startY = 0;
-  const LONG_PRESS_MS = 550;
-
-  const clearPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
-
-  link.on("pointerdown", (event) => {
-    longPressed = false;
-    startX = event.clientX; startY = event.clientY;
-    clearPress();
-    pressTimer = setTimeout(() => {
-      longPressed = true;
-      grp.select(".card-bg").transition().duration(120).attr("transform", "scale(0.94)");
-      window.top.location.href = deleteUrl.toString();
-    }, LONG_PRESS_MS);
-  }).on("pointermove", (event) => {
-    const dx = Math.abs(event.clientX - startX);
-    const dy = Math.abs(event.clientY - startY);
-    if (dx > 10 || dy > 10) clearPress();
-  }).on("pointerup", () => {
-    clearPress();
-  }).on("pointercancel", () => {
-    clearPress();
-  }).on("contextmenu", (event) => {
-    event.preventDefault();
-  }).on("click", (event) => {
-    if (longPressed) {
-      event.preventDefault();
-      longPressed = false;
-    }
-  });
 
   const g2 = grp.append("g").attr("class", "card-bg");
   g2.append("rect").attr("width", 130).attr("height", 172).attr("rx", 20).attr("fill", "white")
