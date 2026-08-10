@@ -579,7 +579,21 @@ allLaidOut.forEach(d => {
     .attr("class", "node-card" + (isSelected ? " selected" : "") + (isFaded ? " faded" : ""))
     .attr("transform", `translate(${d.x - 65}, ${d.y - 90}) scale(${isNew ? 0.2 : 1})`)
     .style("opacity", isNew ? 0 : 1)
-    .on("click", () => selectPerson(d.id));
+    .style("touch-action", "none");
+
+  let tapStart = null;
+  grp.on("pointerdown", (event) => {
+    tapStart = { x: event.clientX, y: event.clientY, t: Date.now() };
+  }).on("pointerup", (event) => {
+    if (!tapStart) return;
+    const dx = Math.abs(event.clientX - tapStart.x);
+    const dy = Math.abs(event.clientY - tapStart.y);
+    const dt = Date.now() - tapStart.t;
+    tapStart = null;
+    if (dx < 12 && dy < 12 && dt < 600) {
+      selectPerson(d.id);
+    }
+  });
 
   const g2 = grp.append("g").attr("class", "card-bg");
   g2.append("rect").attr("width", 130).attr("height", 172).attr("rx", 20).attr("fill", "white")
