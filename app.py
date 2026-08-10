@@ -258,4 +258,86 @@ elif st.session_state.page == "tree":
             elif rel_type == "spouse-of":
                 edges.append(Edge(source=str(p1), target=str(p2), color="#81B29A", dashes=True))
             elif rel_type == "sibling-of":
-                edges.append(Edge(source=str(p1),
+                edges.append(Edge(source=str(p1), target=str(p2), color="#F2CC8F", dashes=True))
+
+        config = Config(
+            width=1100,
+            height=600,
+            directed=True,
+            physics=False,
+            hierarchical=True,
+            nodeHighlightBehavior=True,
+            highlightColor="#E07A5F",
+            collapsible=False,
+        )
+
+        clicked_id = agraph(nodes=nodes, edges=edges, config=config)
+        if clicked_id:
+            go_to_profile(clicked_id)
+            st.rerun()
+
+# ---------- GRID PAGE ----------
+elif st.session_state.page == "grid":
+    st.header("Family Members")
+    people = get_all_persons(search_term if search_term else None)
+
+    if not people:
+        st.info("No family members yet. Click 'Add Person' to start building the tree.")
+    else:
+        cols = st.columns(4)
+        for i, (pid, first, last, photo_path) in enumerate(people):
+            with cols[i % 4]:
+                st.markdown('<div class="person-card">', unsafe_allow_html=True)
+                if photo_path and os.path.exists(photo_path):
+                    st.image(photo_path, use_container_width=True)
+                else:
+                    st.markdown("📷 *No photo*")
+                st.markdown(f"**{first} {last or ''}**")
+                if st.button("View Profile", key=f"btn_{pid}"):
+                    go_to_profile(pid)
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------- PROFILE PAGE ----------
+elif st.session_state.page == "profile":
+    person = get_person(st.session_state.selected_person)
+    if person:
+        pid, first, last, birth_date, location, bio, interests, photo_path, created_at = person
+        st.header(f"{first} {last or ''}")
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            if photo_path and os.path.exists(photo_path):
+                st.image(photo_path, use_container_width=True)
+            else:
+                st.image(get_avatar_src(photo_path, first, last), use_container_width=True)
+        with col2:
+            if birth_date:
+                st.write(f"**🎂 Born:** {birth_date}")
+            if location:
+                st.write(f"**📍 Lives in:** {location}")
+            if interests:
+                st.write(f"**❤️ Interests:** {interests}")
+            if bio:
+                st.write("**About:**")
+                st.write(bio)
+
+        st.divider()
+        st.subheader("Connect a Relative")
+        other_people = [p for p in get_all_persons() if p[0] != pid]
+        if other_people:
+            options = {f"{f} {l or ''}": pid2 for pid2, f, l, _ in other_people}
+            selected_name = st.selectbox("Select relative", list(options.keys()))
+            rel_type = st.selectbox("Relationship", ["parent-of", "child-of", "spouse-of", "sibling-of"])
+            if st.button("Add Relationship"):
+                add_relationship(pid, options[selected_name], rel_type)
+                st.success("Relationship added")
+                st.rerun()
+
+        st.divider()
+        st.subheader("Relationships")
+        rels = get_relationships(pid)
+        if rels:
+            for rel_type, other_id, other_first, other_last in rels:
+                st.write(f"- **{rel_type}** {other_first} {other_last or ''}")
+        else:
+            st.write("No relationships added yet.")
