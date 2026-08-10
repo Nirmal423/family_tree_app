@@ -460,7 +460,7 @@ def build_tree_html(people, rels, selected_id, just_added, stats):
   .link-parent { stroke-width:2.5px; fill:none; }
   .link-spouse { stroke:#7EC8E3; stroke-width:2px; stroke-dasharray:5,4; fill:none; }
   .link-sibling { stroke:#FFD166; stroke-width:2px; stroke-dasharray:2,4; fill:none; }
-  .node-card { cursor:pointer; transition: opacity 0.25s ease; }
+  .node-card { cursor:pointer; transition: opacity 0.25s ease; touch-action: manipulation; }
   .node-card .card-bg { filter:drop-shadow(0 4px 10px rgba(27,42,74,0.16)); transition: all 0.18s ease; }
   .node-card:hover .card-bg { transform: translateY(-3px); }
   .node-card.selected .card-bg { filter:drop-shadow(0 6px 16px rgba(242,112,74,0.35)); }
@@ -514,7 +514,9 @@ const width = window.innerWidth, height = window.innerHeight;
 svg.attr("viewBox", [0,0,width,height]);
 const g = svg.append("g");
 
-const zoom = d3.zoom().scaleExtent([0.3,3]).on("zoom", (event) => { g.attr("transform", event.transform); });
+const zoom = d3.zoom().scaleExtent([0.3,3]).clickDistance(12)
+  .filter((event) => !(event.target && event.target.closest && event.target.closest(".node-card")))
+  .on("zoom", (event) => { g.attr("transform", event.transform); });
 svg.call(zoom);
 function zoomBy(factor) { svg.transition().duration(250).call(zoom.scaleBy, factor); }
 
