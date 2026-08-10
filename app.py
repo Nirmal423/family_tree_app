@@ -568,6 +568,8 @@ edgesData.forEach(e => {
 });
 
 const nodeGroup = g.append("g");
+const parentBaseUrl = new URL(window.parent.location.href);
+
 allLaidOut.forEach(d => {
   const person = nodeById[d.id];
   if (!person) return;
@@ -575,25 +577,19 @@ allLaidOut.forEach(d => {
   const isFaded = selectedId && !connected.has(d.id);
   const isNew = justAdded === d.id;
 
-  const grp = nodeGroup.append("g")
+  const editUrl = new URL(parentBaseUrl.toString());
+  editUrl.searchParams.set("action", "edit");
+  editUrl.searchParams.set("for", d.id);
+  editUrl.searchParams.delete("selected");
+
+  const link = nodeGroup.append("a")
+    .attr("href", editUrl.toString())
+    .attr("target", "_top");
+
+  const grp = link.append("g")
     .attr("class", "node-card" + (isSelected ? " selected" : "") + (isFaded ? " faded" : ""))
     .attr("transform", `translate(${d.x - 65}, ${d.y - 90}) scale(${isNew ? 0.2 : 1})`)
-    .style("opacity", isNew ? 0 : 1)
-    .style("touch-action", "none");
-
-  let tapStart = null;
-  grp.on("pointerdown", (event) => {
-    tapStart = { x: event.clientX, y: event.clientY, t: Date.now() };
-  }).on("pointerup", (event) => {
-    if (!tapStart) return;
-    const dx = Math.abs(event.clientX - tapStart.x);
-    const dy = Math.abs(event.clientY - tapStart.y);
-    const dt = Date.now() - tapStart.t;
-    tapStart = null;
-    if (dx < 12 && dy < 12 && dt < 600) {
-      selectPerson(d.id);
-    }
-  });
+    .style("opacity", isNew ? 0 : 1);
 
   const g2 = grp.append("g").attr("class", "card-bg");
   g2.append("rect").attr("width", 130).attr("height", 172).attr("rx", 20).attr("fill", "white")
@@ -610,14 +606,6 @@ allLaidOut.forEach(d => {
       .attr("transform", `translate(${d.x - 65}, ${d.y - 90}) scale(1)`).style("opacity", 1);
   }
 });
-
-function selectPerson(id) {
-  const url = new URL(window.parent.location.href);
-  url.searchParams.set("action", "edit");
-  url.searchParams.set("for", id);
-  url.searchParams.delete("selected");
-  window.parent.location.href = url.toString();
-}
 
 function centerTree() {
   const target = justAdded || selectedId;
