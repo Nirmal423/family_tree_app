@@ -597,8 +597,9 @@ allLaidOut.forEach(d => {
 
 function selectPerson(id) {
   const url = new URL(window.parent.location.href);
-  url.searchParams.set("selected", id);
-  url.searchParams.delete("action");
+  url.searchParams.set("action", "edit");
+  url.searchParams.set("for", id);
+  url.searchParams.delete("selected");
   window.parent.location.href = url.toString();
 }
 
