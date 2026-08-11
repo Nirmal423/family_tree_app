@@ -116,6 +116,26 @@ def add_relationship(person1_id, person2_id, rel_type):
     conn.commit()
     conn.close()
 
+def relationship_exists(p1, p2, rel_type):
+    conn = get_conn()
+    c = conn.cursor()
+    if rel_type == "parent-of":
+        c.execute("SELECT 1 FROM relationships WHERE person1_id=? AND person2_id=? AND relationship_type=?", (p1, p2, rel_type))
+    else:
+        c.execute("""SELECT 1 FROM relationships WHERE relationship_type=?
+                      AND ((person1_id=? AND person2_id=?) OR (person1_id=? AND person2_id=?))""",
+                   (rel_type, p1, p2, p2, p1))
+    row = c.fetchone()
+    conn.close()
+    return row is not None
+
+def delete_relationship(rowid):
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("DELETE FROM relationships WHERE rowid=?", (rowid,))
+    conn.commit()
+    conn.close()
+
 def get_all_relationships():
     conn = get_conn()
     c = conn.cursor()
@@ -128,7 +148,7 @@ def get_relationships_for(person_id):
     conn = get_conn()
     c = conn.cursor()
     c.execute("""
-        SELECT r.relationship_type, p.id, p.first_name, p.last_name
+        SELECT r.rowid, r.relationship_type, r.person1_id, r.person2_id, p.id, p.first_name, p.last_name
         FROM relationships r
         JOIN persons p ON (p.id = CASE WHEN r.person1_id = ? THEN r.person2_id ELSE r.person1_id END)
         WHERE r.person1_id = ? OR r.person2_id = ?
