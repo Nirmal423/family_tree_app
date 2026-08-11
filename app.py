@@ -305,7 +305,7 @@ div[data-baseweb="select"] * { color: var(--navy) !important; }
     position:fixed; right:22px; bottom:88px; width:56px; height:56px; border-radius:50%;
     background:linear-gradient(135deg, var(--coral), var(--coral-deep)); color:white !important;
     display:flex; align-items:center; justify-content:center; font-size:26px; text-decoration:none;
-    box-shadow:0 8px 20px rgba(242,112,74,0.45); z-index:9999; transition: transform 0.15s ease;
+    box-shadow:0 8px 20px rgba(242,112,74,0.45); z-index:10002; transition: transform 0.15s ease;
 }
 .fab:hover { transform: scale(1.08); }
 .fab:active { transform: scale(0.94); }
@@ -313,7 +313,7 @@ div[data-baseweb="select"] * { color: var(--navy) !important; }
 .bottom-nav {
     position:fixed; left:0; right:0; bottom:0; height:60px; background:white;
     display:flex; align-items:center; justify-content:space-around; box-shadow:0 -4px 16px rgba(27,42,74,0.08);
-    z-index:9998; padding-bottom: env(safe-area-inset-bottom);
+    z-index:10001; padding-bottom: env(safe-area-inset-bottom);
 }
 .bottom-nav a { color:var(--navy) !important; text-decoration:none; font-size:21px; opacity:0.5; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; }
 .bottom-nav a.active { opacity:1; color:var(--coral-deep) !important; }
@@ -470,6 +470,15 @@ def render_wizard():
 
     label_map = {"parent": "Add a Parent", "child": "Add a Child", "partner": "Add a Partner",
                  "sibling": "Add a Sibling", "other": "Add a Family Member", None: "Add Yourself"}
+
+    back_href = f"?selected={for_param}" if editing else "?"
+    st.markdown(f"""
+    <a href="{back_href}" style="display:inline-flex;align-items:center;gap:6px;color:#4A5670;
+        text-decoration:none;font-size:0.9rem;font-weight:600;margin-bottom:6px;">
+      ← Back to Family Tree
+    </a>
+    """, unsafe_allow_html=True)
+
     st.markdown(f'<div class="wizard-heading">{"Edit Details" if editing else label_map.get(rel_param, "Add a Family Member")}</div>', unsafe_allow_html=True)
     st.markdown('<div class="wizard-sub">Tell us about them</div>', unsafe_allow_html=True)
 
@@ -808,9 +817,11 @@ def render_profile_drawer(person_id):
     pid, first, last, birth, loc, bio, interests, photo, created = p
     img = get_avatar_src(photo, first, last)
     relationships = get_relationships_for(pid)
+    rel_labels = {"parent-of": ("Parent of", "Child of"), "spouse-of": ("Partner of", "Partner of"),
+                  "sibling-of": ("Sibling of", "Sibling of")}
     rel_html = "".join(
-        f"<div class='rel-row'>🔗 <b>{rt.replace('-', ' ')}</b> {of} {ol or ''}</div>"
-        for rt, oid, of, ol in relationships
+        f"<div class='rel-row'>🔗 <b>{rel_labels[rt][0] if p1 == pid else rel_labels[rt][1]}</b> {of} {ol or ''}</div>"
+        for rowid, rt, p1, p2, oid, of, ol in relationships
     ) or "<div class='rel-row' style='opacity:0.6'>No connections yet</div>"
 
     details = ""
