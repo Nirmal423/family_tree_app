@@ -473,6 +473,62 @@ def render_wizard():
     st.markdown(f'<div class="wizard-heading">{"Edit Details" if editing else label_map.get(rel_param, "Add a Family Member")}</div>', unsafe_allow_html=True)
     st.markdown('<div class="wizard-sub">Tell us about them</div>', unsafe_allow_html=True)
 
+    if editing:
+        existing_rels = get_relationships_for(for_param)
+        rel_labels = {"parent-of": ("Parent of", "Child of"), "spouse-of": ("Partner of", "Partner of"),
+                      "sibling-of": ("Sibling of", "Sibling of")}
+
+        with st.container(border=True):
+            st.markdown('<div style="font-size:1.1rem;font-weight:700;color:#1B2A4A;">🔗 Family Connections</div>', unsafe_allow_html=True)
+            st.caption("Everyone this person is linked to in the tree")
+
+            if existing_rels:
+                for rowid, rtype, p1, p2, other_id, ofn, oln in existing_rels:
+                    is_p1 = (p1 == for_param)
+                    label = rel_labels[rtype][0] if is_p1 else rel_labels[rtype][1]
+                    rcol1, rcol2 = st.columns([4, 1])
+                    with rcol1:
+                        st.markdown(f"<div style='padding-top:8px;color:#4A5670;'>{label} <b style='color:#1B2A4A;'>{ofn} {oln or ''}</b></div>", unsafe_allow_html=True)
+                    with rcol2:
+                        if st.button("✕", key=f"unlink_{rowid}", use_container_width=True):
+                            delete_relationship(rowid)
+                            st.rerun()
+            else:
+                st.caption("No connections yet.")
+
+            st.markdown("**+ Link to an existing person**")
+            other_people = [p for p in people if p[0] != for_param]
+            if other_people:
+                other_choice = st.selectbox(
+                    "Person", other_people,
+                    format_func=lambda p: f"{p[1]} {p[2] or ''}".strip(),
+                    key="link_person_choice"
+                )
+                rel_choice = st.selectbox(
+                    "Relationship", ["Parent", "Child", "Partner", "Sibling"],
+                    key="link_rel_choice"
+                )
+                if st.button("Link this person", key="link_confirm", use_container_width=True):
+                    other_id = other_choice[0]
+                    if rel_choice == "Parent":
+                        new_p1, new_p2, new_type = other_id, for_param, "parent-of"
+                    elif rel_choice == "Child":
+                        new_p1, new_p2, new_type = for_param, other_id, "parent-of"
+                    elif rel_choice == "Partner":
+                        new_p1, new_p2, new_type = for_param, other_id, "spouse-of"
+                    else:
+                        new_p1, new_p2, new_type = for_param, other_id, "sibling-of"
+
+                    if relationship_exists(new_p1, new_p2, new_type):
+                        st.warning("That connection already exists.")
+                    else:
+                        add_relationship(new_p1, new_p2, new_type)
+                        st.rerun()
+            else:
+                st.caption("No other people to link to yet.")
+
+        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+
     with st.form("person_form"):
         p = edit_person
         first_name = st.text_input("First Name *", value=p[1] if p else "")
@@ -513,6 +569,7 @@ def render_wizard():
                     st.rerun()
 
     if editing:
+        st.markdown("---")
         col1, col2 = st.columns(2)
         with col1:
             if st.button("← Cancel", use_container_width=True):
