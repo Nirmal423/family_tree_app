@@ -406,9 +406,9 @@ def render_wizard():
     editing = action == "edit" and for_param
 
     if st.session_state.get("just_saved"):
-        saved_id = st.session_state.pop("just_saved")
-        saved_name = st.session_state.pop("just_saved_name", "")
-        was_new = st.session_state.pop("just_saved_new", False)
+        saved_id = st.session_state.just_saved
+        saved_name = st.session_state.get("just_saved_name", "")
+        was_new = st.session_state.get("just_saved_new", False)
         st.markdown(f"""
         <div style="max-width:420px;margin:40px auto 8px auto;text-align:center;background:white;
             border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(27,42,74,0.1); border:1px solid #EFE7DA;">
@@ -417,6 +417,9 @@ def render_wizard():
         </div>
         """, unsafe_allow_html=True)
         if st.button("← Back to Family Tree", use_container_width=True):
+            st.session_state.just_saved = None
+            st.session_state.just_saved_name = None
+            st.session_state.just_saved_new = None
             st.query_params.clear()
             st.query_params["selected"] = str(saved_id)
             st.rerun()
@@ -590,10 +593,14 @@ nodesData.forEach(n => nodeById[n.id] = n);
 
 const childrenMap = {};
 const hasParent = new Set();
+const childAssignedTo = {};
 edgesData.filter(e => e.type === "parent").forEach(e => {
-  childrenMap[e.source] = childrenMap[e.source] || [];
-  childrenMap[e.source].push(e.target);
   hasParent.add(e.target);
+  if (!(e.target in childAssignedTo)) {
+    childAssignedTo[e.target] = e.source;
+    childrenMap[e.source] = childrenMap[e.source] || [];
+    childrenMap[e.source].push(e.target);
+  }
 });
 const roots = nodesData.filter(n => !hasParent.has(n.id));
 
