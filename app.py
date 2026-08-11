@@ -185,11 +185,11 @@ def infer_role_label(pid, rels):
     return ""
 
 BRANCH_PALETTE = [
-    ("#FF8C69", "#FFE3D6"),
-    ("#7EC8E3", "#DCF0F8"),
-    ("#B8A6E0", "#EAE3F7"),
-    ("#8FD9C4", "#DFF5EE"),
-    ("#FFD166", "#FFF3D6"),
+    ("#C97B52", "#F3E0D3"),
+    ("#7D8C4A", "#E8ECDB"),
+    ("#8B5E3C", "#EDE0D3"),
+    ("#B97A72", "#F3E3E0"),
+    ("#D4A24C", "#F7EAD2"),
 ]
 
 def compute_branch_colors(people, rels):
@@ -268,14 +268,14 @@ if "just_added" not in st.session_state:
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
 
 :root {
-    --ivory:#FFFBF5; --navy:#1B2A4A; --navy-soft:#4A5670; --coral:#FF8C69; --coral-deep:#F2704A;
-    --lavender:#B8A6E0; --sky:#7EC8E3; --mint:#8FD9C4; --yellow:#FFD166; --border:#EFE7DA;
+    --ivory:#F7EFE0; --navy:#3E2E22; --navy-soft:#7A6A57; --coral:#C97B52; --coral-deep:#A8532F;
+    --lavender:#8B5E3C; --sky:#7D8C4A; --mint:#B97A72; --yellow:#D4A24C; --border:#E6DAC5;
 }
 html, body, [class*="css"] { font-family: 'Plus Jakarta Sans', sans-serif !important; color: var(--navy) !important; }
-.stApp { background: linear-gradient(160deg, #FFFBF5 0%, #FFF3E9 100%); }
+.stApp { background: linear-gradient(160deg, #F7EFE0 0%, #F0E4CE 100%); }
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding-top: 0.5rem !important; padding-bottom: 5rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
@@ -295,67 +295,80 @@ div[data-baseweb="select"] * { color: var(--navy) !important; }
 .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 { color: var(--navy) !important; }
 
 .top-bar {
-    display:flex; align-items:center; justify-content:space-between; padding: 10px 14px;
-    background:white; border-radius:16px; margin: 0 4px 6px 4px; box-shadow:0 2px 10px rgba(27,42,74,0.06);
+    display:flex; align-items:center; justify-content:space-between; padding: 16px 18px;
+    background:#FFFDF9; border-radius:18px; margin: 0 4px 10px 4px; box-shadow:0 2px 10px rgba(62,46,34,0.06);
+    border:1px solid var(--border);
 }
-.top-bar .brand { font-size:1.05rem; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px; }
-.top-bar .search-icon { font-size:1.15rem; opacity:0.55; }
+.top-bar .brand-block { display:flex; align-items:center; gap:10px; }
+.top-bar .brand-icon {
+    width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, var(--sky), #647239);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+}
+.top-bar .brand-text { display:flex; flex-direction:column; line-height:1.15; }
+.top-bar .brand-title { font-family:'Playfair Display', serif; font-size:1.15rem; font-weight:700; color:var(--navy); }
+.top-bar .brand-tag { font-size:0.72rem; color:var(--navy-soft); letter-spacing:0.02em; }
+.top-bar .search-icon { font-size:1.1rem; opacity:0.5; color:var(--navy); }
 
 .fab {
     position:fixed; right:22px; bottom:88px; width:56px; height:56px; border-radius:50%;
     background:linear-gradient(135deg, var(--coral), var(--coral-deep)); color:white !important;
     display:flex; align-items:center; justify-content:center; font-size:26px; text-decoration:none;
-    box-shadow:0 8px 20px rgba(242,112,74,0.45); z-index:10002; transition: transform 0.15s ease;
+    box-shadow:0 8px 20px rgba(168,83,47,0.4); z-index:10002; transition: transform 0.15s ease;
 }
 .fab:hover { transform: scale(1.08); }
 .fab:active { transform: scale(0.94); }
 
 .bottom-nav {
-    position:fixed; left:0; right:0; bottom:0; height:60px; background:white;
-    display:flex; align-items:center; justify-content:space-around; box-shadow:0 -4px 16px rgba(27,42,74,0.08);
-    z-index:10001; padding-bottom: env(safe-area-inset-bottom);
+    position:fixed; left:0; right:0; bottom:0; height:66px; background:#FFFDF9;
+    display:flex; align-items:center; justify-content:space-around; box-shadow:0 -4px 16px rgba(62,46,34,0.08);
+    z-index:10001; padding-bottom: env(safe-area-inset-bottom); border-top:1px solid var(--border);
 }
-.bottom-nav a { color:var(--navy) !important; text-decoration:none; font-size:21px; opacity:0.5; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; }
-.bottom-nav a.active { opacity:1; color:var(--coral-deep) !important; }
+.bottom-nav a {
+    color:var(--navy-soft) !important; text-decoration:none; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px; min-width:56px; min-height:48px;
+    font-size:19px; opacity:0.65; border-radius:14px; padding:4px 14px;
+}
+.bottom-nav a .nav-label { font-size:0.62rem; font-weight:700; }
+.bottom-nav a.active { opacity:1; color:var(--coral-deep) !important; background:#F3E0D3; }
 @media (min-width: 900px) { .bottom-nav { display:none; } .fab { bottom:32px; } }
 
 .choice-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap:14px; margin: 18px 0 6px 0; }
 .choice-card {
-    background:linear-gradient(155deg, #ffffff, #FFF6EE); border-radius:20px; padding:24px 10px; text-align:center;
-    box-shadow:0 4px 14px rgba(27,42,74,0.08); border:2px solid transparent; transition: all 0.18s ease;
+    background:linear-gradient(155deg, #ffffff, #FBF5EA); border-radius:20px; padding:24px 10px; text-align:center;
+    box-shadow:0 4px 14px rgba(62,46,34,0.08); border:2px solid transparent; transition: all 0.18s ease;
     cursor:pointer; color:var(--navy) !important; text-decoration:none; display:block;
 }
-.choice-card:hover { border-color: var(--coral); transform: translateY(-4px); box-shadow:0 10px 22px rgba(242,112,74,0.18); }
+.choice-card:hover { border-color: var(--coral); transform: translateY(-4px); box-shadow:0 10px 22px rgba(168,83,47,0.18); }
 .choice-card:active { transform: scale(0.97); }
 .choice-emoji { font-size:2rem; display:block; margin-bottom:8px; }
 .choice-label { font-weight:700; font-size:0.92rem; color:var(--navy) !important; }
 
 div[data-testid="stForm"] {
-    background:white; border-radius:22px; padding:28px; box-shadow:0 8px 24px rgba(27,42,74,0.1);
+    background:white; border-radius:22px; padding:28px; box-shadow:0 8px 24px rgba(62,46,34,0.1);
     max-width:520px; margin: 0 auto; border: 1px solid var(--border);
 }
 div.stButton > button {
     background: linear-gradient(135deg, var(--coral), var(--coral-deep)) !important;
     color:white !important; border:none !important; border-radius:14px !important; padding:0.6em 1.4em !important; font-weight:700 !important;
-    box-shadow:0 4px 12px rgba(242,112,74,0.3); transition: transform 0.12s ease;
+    box-shadow:0 4px 12px rgba(168,83,47,0.3); transition: transform 0.12s ease;
 }
 div.stButton > button:hover { transform: translateY(-2px); }
 div.stButton > button:active { transform: scale(0.97); }
 div.stButton > button p { color: white !important; }
 
 .success-banner {
-    background: linear-gradient(135deg, var(--mint), #6FCBA8); color:white !important; border-radius:18px;
+    background: linear-gradient(135deg, var(--mint), #98A85E); color:white !important; border-radius:18px;
     padding:20px 24px; text-align:center; font-weight:700; font-size:1.05rem; max-width:520px; margin:16px auto;
-    box-shadow:0 8px 20px rgba(143,217,196,0.4); animation: pop 0.4s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 8px 20px rgba(152,168,94,0.4); animation: pop 0.4s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes pop { 0%{transform:scale(0.7);opacity:0;} 100%{transform:scale(1);opacity:1;} }
 
 .onboarding { text-align:center; padding: 60px 20px; }
-.onboarding h2 { color:var(--navy) !important; font-size:1.8rem; font-weight:800; }
+.onboarding h2 { color:var(--navy) !important; font-family:'Playfair Display', serif; font-size:1.9rem; font-weight:700; }
 .onboarding p { color:var(--navy-soft) !important; font-size:1rem; max-width:420px; margin:8px auto 20px auto; }
 
-.wizard-heading { color:var(--navy) !important; font-weight:800; font-size:1.3rem; margin-top:4px; }
-.wizard-sub { color:var(--navy-soft) !important; font-size:0.9rem; margin-top:-6px; margin-bottom:4px; }
+.wizard-heading { color:var(--navy) !important; font-family:'Playfair Display', serif; font-weight:700; font-size:1.5rem; margin-top:4px; }
+.wizard-sub { color:var(--navy-soft) !important; font-size:0.9rem; margin-top:-2px; margin-bottom:4px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -377,11 +390,11 @@ def render_delete_confirm():
 
     st.markdown(f"""
     <div style="max-width:420px;margin:40px auto 8px auto;text-align:center;background:white;
-        border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(27,42,74,0.1); border:1px solid #EFE7DA;">
+        border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(62,46,34,0.1); border:1px solid #E6DAC5;">
       <img src="{img}" style="width:88px;height:88px;border-radius:20px;object-fit:cover;
-          box-shadow:0 4px 12px rgba(27,42,74,0.15);margin-bottom:16px;"/>
-      <h3 style="color:#1B2A4A !important;margin:0 0 8px 0;">Remove {full_name} from the tree?</h3>
-      <p style="color:#4A5670 !important;font-size:0.9rem;line-height:1.5;margin:0;">
+          box-shadow:0 4px 12px rgba(62,46,34,0.15);margin-bottom:16px;"/>
+      <h3 style="color:#3E2E22 !important;margin:0 0 8px 0;">Remove {full_name} from the tree?</h3>
+      <p style="color:#7A6A57 !important;font-size:0.9rem;line-height:1.5;margin:0;">
         This also removes their connections to other family members. This can't be undone.
       </p>
     </div>
@@ -413,8 +426,14 @@ total, generations, branches, stories = compute_stats(people, rels)
 
 st.markdown("""
 <div class="top-bar">
-  <div class="brand">🌳 Our Family</div>
-  <div class="search-icon">⋯</div>
+  <div class="brand-block">
+    <div class="brand-icon">🌿</div>
+    <div class="brand-text">
+      <div class="brand-title">Our Family Tree</div>
+      <div class="brand-tag">Roots · Branches · Forever</div>
+    </div>
+  </div>
+  <div class="search-icon">⚙️</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -431,9 +450,9 @@ def render_wizard():
         was_new = st.session_state.get("just_saved_new", False)
         st.markdown(f"""
         <div style="max-width:420px;margin:40px auto 8px auto;text-align:center;background:white;
-            border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(27,42,74,0.1); border:1px solid #EFE7DA;">
+            border-radius:22px;padding:32px 28px;box-shadow:0 8px 24px rgba(62,46,34,0.1); border:1px solid #E6DAC5;">
           <div style="font-size:2.2rem;margin-bottom:8px;">{"✨" if was_new else "💾"}</div>
-          <h3 style="color:#1B2A4A !important;margin:0 0 8px 0;">{saved_name} {"joined the tree" if was_new else "has been updated"}</h3>
+          <h3 style="color:#3E2E22 !important;margin:0 0 8px 0;">{saved_name} {"joined the tree" if was_new else "has been updated"}</h3>
         </div>
         """, unsafe_allow_html=True)
         if st.button("← Back to Family Tree", use_container_width=True):
@@ -473,14 +492,21 @@ def render_wizard():
 
     back_href = f"?selected={for_param}" if editing else "?"
     st.markdown(f"""
-    <a href="{back_href}" style="display:inline-flex;align-items:center;gap:6px;color:#4A5670;
-        text-decoration:none;font-size:0.9rem;font-weight:600;margin-bottom:6px;">
+    <a href="{back_href}" style="display:inline-flex;align-items:center;gap:8px;color:white;
+        text-decoration:none;font-size:1rem;font-weight:700;margin-bottom:16px;
+        background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+        padding:12px 20px;border-radius:14px;box-shadow:0 4px 14px rgba(168,83,47,0.35);">
       ← Back to Family Tree
     </a>
     """, unsafe_allow_html=True)
 
-    st.markdown(f'<div class="wizard-heading">{"Edit Details" if editing else label_map.get(rel_param, "Add a Family Member")}</div>', unsafe_allow_html=True)
-    st.markdown('<div class="wizard-sub">Tell us about them</div>', unsafe_allow_html=True)
+    if editing and edit_person:
+        edit_name = f"{edit_person[1]} {edit_person[2] or ''}".strip()
+        st.markdown(f'<div class="wizard-heading">Editing {edit_name}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="wizard-sub">Update their details below</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="wizard-heading">{label_map.get(rel_param, "Add a Family Member")}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="wizard-sub">Tell us about them</div>', unsafe_allow_html=True)
 
     if editing:
         existing_rels = get_relationships_for(for_param)
@@ -488,7 +514,7 @@ def render_wizard():
                       "sibling-of": ("Sibling of", "Sibling of")}
 
         with st.container(border=True):
-            st.markdown('<div style="font-size:1.1rem;font-weight:700;color:#1B2A4A;">🔗 Family Connections</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-size:1.1rem;font-weight:700;color:#3E2E22;">🔗 Family Connections</div>', unsafe_allow_html=True)
             st.caption("Everyone this person is linked to in the tree")
 
             if existing_rels:
@@ -497,7 +523,7 @@ def render_wizard():
                     label = rel_labels[rtype][0] if is_p1 else rel_labels[rtype][1]
                     rcol1, rcol2 = st.columns([4, 1])
                     with rcol1:
-                        st.markdown(f"<div style='padding-top:8px;color:#4A5670;'>{label} <b style='color:#1B2A4A;'>{ofn} {oln or ''}</b></div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='padding-top:8px;color:#7A6A57;'>{label} <b style='color:#3E2E22;'>{ofn} {oln or ''}</b></div>", unsafe_allow_html=True)
                     with rcol2:
                         if st.button("✕", key=f"unlink_{rowid}", use_container_width=True):
                             delete_relationship(rowid)
@@ -635,25 +661,25 @@ def build_tree_html(people, rels, selected_id, just_added, stats):
   svg { width:100%; height:100%; cursor:grab; display:block; }
   svg:active { cursor:grabbing; }
   .link-parent { stroke-width:2.5px; fill:none; }
-  .link-spouse { stroke:#7EC8E3; stroke-width:2px; stroke-dasharray:5,4; fill:none; }
-  .link-sibling { stroke:#FFD166; stroke-width:2px; stroke-dasharray:2,4; fill:none; }
+  .link-spouse { stroke:#7D8C4A; stroke-width:2px; stroke-dasharray:5,4; fill:none; }
+  .link-sibling { stroke:#D4A24C; stroke-width:2px; stroke-dasharray:2,4; fill:none; }
   .node-card { cursor:pointer; transition: opacity 0.25s ease; touch-action: manipulation; }
-  .node-card .card-bg { filter:drop-shadow(0 4px 10px rgba(27,42,74,0.16)); transition: all 0.18s ease; }
+  .node-card .card-bg { filter:drop-shadow(0 4px 10px rgba(62,46,34,0.16)); transition: all 0.18s ease; }
   .node-card:hover .card-bg { transform: translateY(-3px); }
-  .node-card.selected .card-bg { filter:drop-shadow(0 6px 16px rgba(242,112,74,0.35)); }
+  .node-card.selected .card-bg { filter:drop-shadow(0 6px 16px rgba(168,83,47,0.35)); }
   .node-card.faded { opacity:0.22; }
-  .node-name { font-size:13px; font-weight:800; fill:#1B2A4A; text-anchor:middle; }
-  .node-role { font-size:10.5px; font-weight:600; fill:#8A94A6; text-anchor:middle; }
-  .stat-strip { font-size:11px; fill:#8A94A6; font-weight:600; }
+  .node-name { font-size:13px; font-weight:800; fill:#3E2E22; text-anchor:middle; }
+  .node-role { font-size:10.5px; font-weight:600; fill:#9C8B76; text-anchor:middle; }
+  .stat-strip { font-size:11px; fill:#9C8B76; font-weight:600; }
   .controls { position:fixed; right:14px; top:14px; display:flex; flex-direction:column; gap:8px; }
   .ctrl-btn {
     width:38px; height:38px; border-radius:50%; background:white; border:none;
-    box-shadow:0 3px 10px rgba(27,42,74,0.15); font-size:17px; color:#1B2A4A; cursor:pointer;
+    box-shadow:0 3px 10px rgba(62,46,34,0.15); font-size:17px; color:#3E2E22; cursor:pointer;
   }
   .stats-badge {
     position:fixed; left:14px; top:14px; background:rgba(255,255,255,0.9); backdrop-filter:blur(4px);
-    border-radius:14px; padding:8px 14px; font-size:11.5px; font-weight:600; color:#4A5670;
-    box-shadow:0 3px 10px rgba(27,42,74,0.08); display:flex; gap:12px;
+    border-radius:14px; padding:8px 14px; font-size:11.5px; font-weight:600; color:#7A6A57;
+    box-shadow:0 3px 10px rgba(62,46,34,0.08); display:flex; gap:12px;
   }
 </style>
 </head>
@@ -774,7 +800,7 @@ allLaidOut.forEach(d => {
 
   const g2 = grp.append("g").attr("class", "card-bg");
   g2.append("rect").attr("width", 130).attr("height", 172).attr("rx", 20).attr("fill", "white")
-    .attr("stroke", isSelected ? person.accent : "rgba(27,42,74,0.06)").attr("stroke-width", isSelected ? 3 : 1);
+    .attr("stroke", isSelected ? person.accent : "rgba(62,46,34,0.06)").attr("stroke-width", isSelected ? 3 : 1);
   g2.append("rect").attr("width", 130).attr("height", 6).attr("rx", 3).attr("fill", person.accent);
   g2.append("clipPath").attr("id", "clip"+d.id).append("rect").attr("x", 15).attr("y", 16).attr("width", 100).attr("height", 100).attr("rx", 16);
   g2.append("image").attr("href", person.img).attr("x", 15).attr("y", 16).attr("width", 100).attr("height", 100).attr("clip-path", `url(#clip${d.id})`);
@@ -834,7 +860,7 @@ def render_profile_drawer(person_id):
     <style>
     .drawer {{
         position:fixed; top:0; right:0; height:100vh; width:340px; background:white;
-        box-shadow:-8px 0 30px rgba(27,42,74,0.15); z-index:10000; padding:24px;
+        box-shadow:-8px 0 30px rgba(62,46,34,0.15); z-index:10000; padding:24px;
         overflow-y:auto; animation: slideIn 0.28s ease;
     }}
     @keyframes slideIn {{ from {{ transform:translateX(100%); }} to {{ transform:translateX(0); }} }}
@@ -843,21 +869,27 @@ def render_profile_drawer(person_id):
             border-radius:24px 24px 0 0; animation: slideUp 0.28s ease; }}
         @keyframes slideUp {{ from {{ transform:translateY(100%); }} to {{ transform:translateY(0); }} }}
     }}
-    .drawer img.avatar {{ width:88px; height:88px; border-radius:22px; object-fit:cover; box-shadow:0 4px 14px rgba(27,42,74,0.2); }}
-    .drawer h2 {{ color:#1B2A4A !important; margin:12px 0 4px 0; }}
-    .drawer-detail {{ color:#4A5670 !important; font-size:0.86rem; margin-bottom:3px; }}
-    .drawer-bio {{ color:#4A5670 !important; font-size:0.9rem; line-height:1.5; margin-top:10px; }}
-    .rel-row {{ font-size:0.85rem; color:#1B2A4A !important; padding:6px 0; border-bottom:1px solid #F3F0EA; }}
+    .drawer img.avatar {{ width:88px; height:88px; border-radius:22px; object-fit:cover; box-shadow:0 4px 14px rgba(62,46,34,0.2); }}
+    .drawer h2 {{ font-family:'Playfair Display', serif; color:#3E2E22 !important; margin:12px 0 4px 0; font-weight:700; }}
+    .drawer-detail {{ color:#7A6A57 !important; font-size:0.86rem; margin-bottom:3px; }}
+    .drawer-bio {{ color:#7A6A57 !important; font-size:0.9rem; line-height:1.5; margin-top:10px; }}
+    .rel-row {{ font-size:0.85rem; color:#3E2E22 !important; padding:6px 0; border-bottom:1px solid #EDE2D0; }}
     .drawer-actions {{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }}
     .drawer-actions a {{
         text-decoration:none; font-size:0.8rem; font-weight:700; padding:8px 12px; border-radius:12px;
-        background:#FFF3E9; color:#F2704A !important;
+        background:#F0E4CE; color:#A8532F !important;
     }}
-    .close-x {{ position:absolute; top:18px; right:18px; text-decoration:none; color:#8A94A6 !important; font-size:20px; }}
-    .drawer h4 {{ color:#1B2A4A !important; margin-top:20px; }}
+    .close-x {{ position:absolute; top:18px; right:18px; text-decoration:none; color:#9C8B76 !important; font-size:20px; }}
+    .drawer-back {{
+        display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:#7A6A57 !important;
+        font-size:0.85rem; font-weight:700; margin-bottom:14px; background:#EDE2D0; padding:8px 14px;
+        border-radius:12px;
+    }}
+    .drawer h4 {{ color:#3E2E22 !important; margin-top:20px; }}
     </style>
     <div class="drawer">
       <a class="close-x" href="?">✕</a>
+      <a class="drawer-back" href="?">← Back to Family Tree</a>
       <img class="avatar" src="{img}"/>
       <h2>{first} {last or ''}</h2>
       {details}
@@ -903,7 +935,7 @@ else:
     st.markdown("""
     <a class="fab" href="?action=add">+</a>
     <div class="bottom-nav">
-      <a class="active" href="?">🌳</a>
-      <a href="?action=add">➕</a>
+      <a class="active" href="?"><span>🌳</span><span class="nav-label">Tree</span></a>
+      <a href="?action=add"><span>➕</span><span class="nav-label">Add</span></a>
     </div>
     """, unsafe_allow_html=True)
