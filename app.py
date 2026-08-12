@@ -918,110 +918,71 @@ def render_profile_drawer(person_id):
 
 def render_landing_page():
     st.markdown("""
-    <style>
-    .landing-wrap { margin: -0.5rem -1rem 0 -1rem; }
-    .landing-hero {
-        position:relative; min-height:340px; border-radius:0 0 32px 32px; overflow:hidden;
-        background: linear-gradient(180deg, rgba(35,28,18,0.15) 0%, rgba(35,28,18,0.55) 55%, #F7EFE0 100%),
-                    url('https://images.unsplash.com/photo-1508184964240-ee96bb9677a7?q=80&w=1200&auto=format&fit=crop') center/cover;
-        padding: 22px 20px 26px 20px; box-shadow:0 6px 24px rgba(62,46,34,0.18);
-    }
-    .landing-topbar { display:flex; align-items:flex-start; justify-content:space-between; color:white; }
-    .landing-menu-icon, .landing-gear-icon { font-size:1.25rem; opacity:0.92; }
-    .landing-title-block { text-align:center; margin-top:26px; }
-    .landing-title { font-family:'Playfair Display', serif; font-weight:700; font-size:2rem; color:white; text-shadow:0 2px 10px rgba(0,0,0,0.35); }
-    .landing-tag { color:#F3E8D6; font-size:0.85rem; letter-spacing:0.04em; margin-top:2px; }
-
-    .landing-tree { position:relative; margin-top:26px; padding: 0 6px; }
-    .landing-row { display:flex; justify-content:center; gap:14px; margin-bottom:18px; }
-    .landing-card {
-        background:#FFFDF9; border-radius:16px; padding:8px 8px 10px 8px; text-align:center;
-        box-shadow:0 6px 16px rgba(62,46,34,0.22); width:78px;
-    }
-    .landing-card .lc-avatar {
-        width:56px; height:56px; border-radius:12px; margin:0 auto 6px auto; display:flex; align-items:center;
-        justify-content:center; font-size:1.3rem; color:white; font-weight:700; font-family:'Playfair Display', serif;
-    }
-    .landing-card .lc-name { font-size:0.72rem; font-weight:700; color:#3E2E22; white-space:nowrap; }
-    .landing-card .lc-years { font-size:0.6rem; color:#9C8B76; }
-
-    .landing-cta-wrap { text-align:center; margin: 22px 0 8px 0; }
-    .landing-blurb { color:#7A6A57; font-size:0.9rem; max-width:380px; margin:0 auto 18px auto; line-height:1.5; }
-
-    .landing-bottom-nav {
-        display:flex; align-items:center; justify-content:space-around; background:#FFFDF9;
-        border-radius:18px; padding:10px 4px; margin: 22px 4px 6px 4px; box-shadow:0 2px 10px rgba(62,46,34,0.06);
-        border:1px solid #E6DAC5;
-    }
-    .landing-nav-item { display:flex; flex-direction:column; align-items:center; gap:2px; opacity:0.55; }
-    .landing-nav-item.active { opacity:1; color:#A8532F; }
-    .landing-nav-item span.icon { font-size:1.15rem; }
-    .landing-nav-item span.label { font-size:0.62rem; font-weight:700; color:#7A6A57; }
-    .landing-nav-item.active span.label { color:#A8532F; }
-    </style>
-
-    <div class="landing-wrap">
-      <div class="landing-hero">
-        <div class="landing-topbar">
-          <span class="landing-menu-icon">☰</span>
-          <span class="landing-gear-icon">⚙️</span>
-        </div>
-        <div class="landing-title-block">
-          <div class="landing-title">Our Family Tree</div>
-          <div class="landing-tag">Roots · Branches · Forever</div>
-        </div>
-
-        <div class="landing-tree">
-          <div class="landing-row">
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#C97B52,#A8532F);">R</div>
-              <div class="lc-name">Rajesh</div><div class="lc-years">1948–</div>
-            </div>
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#D4A24C,#B9862F);">L</div>
-              <div class="lc-name">Lakshmi</div><div class="lc-years">1950–</div>
-            </div>
-          </div>
-          <div class="landing-row">
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#7D8C4A,#647239);">N</div>
-              <div class="lc-name">Nirmal</div><div class="lc-years">1979–</div>
-            </div>
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#B97A72,#9C5F58);">A</div>
-              <div class="lc-name">Anita</div><div class="lc-years">1982–</div>
-            </div>
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#8B5E3C,#6E4A2F);">K</div>
-              <div class="lc-name">Kiran</div><div class="lc-years">1985–</div>
-            </div>
-          </div>
-          <div class="landing-row">
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#7D8C4A,#647239);">N</div>
-              <div class="lc-name">Nilan</div><div class="lc-years">2019–</div>
-            </div>
-            <div class="landing-card">
-              <div class="lc-avatar" style="background:linear-gradient(135deg,#C97B52,#A8532F);">A</div>
-              <div class="lc-name">Aanya</div><div class="lc-years">2021–</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="landing-cta-wrap">
-        <p class="landing-blurb">Every family has a story worth keeping. Explore your tree, add the people who matter, and watch it grow branch by branch.</p>
-      </div>
-
-      <div class="landing-bottom-nav">
-        <div class="landing-nav-item active"><span class="icon">🌳</span><span class="label">Tree</span></div>
-        <div class="landing-nav-item"><span class="icon">👥</span><span class="label">People</span></div>
-        <div class="landing-nav-item"><span class="icon">📅</span><span class="label">Events</span></div>
-        <div class="landing-nav-item"><span class="icon">🖼️</span><span class="label">Photos</span></div>
-        <div class="landing-nav-item"><span class="icon">⋯</span><span class="label">More</span></div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
+<style>
+.landing-wrap { margin: -0.5rem -1rem 0 -1rem; }
+.landing-hero {
+    position:relative; min-height:340px; border-radius:0 0 32px 32px; overflow:hidden;
+    background: linear-gradient(180deg, rgba(35,28,18,0.15) 0%, rgba(35,28,18,0.55) 55%, #F7EFE0 100%), url('https://images.unsplash.com/photo-1508184964240-ee96bb9677a7?q=80&w=1200&auto=format&fit=crop') center/cover;
+    padding: 22px 20px 26px 20px; box-shadow:0 6px 24px rgba(62,46,34,0.18);
+}
+.landing-topbar { display:flex; align-items:flex-start; justify-content:space-between; color:white; }
+.landing-menu-icon, .landing-gear-icon { font-size:1.25rem; opacity:0.92; }
+.landing-title-block { text-align:center; margin-top:26px; }
+.landing-title { font-family:'Playfair Display', serif; font-weight:700; font-size:2rem; color:white; text-shadow:0 2px 10px rgba(0,0,0,0.35); }
+.landing-tag { color:#F3E8D6; font-size:0.85rem; letter-spacing:0.04em; margin-top:2px; }
+.landing-tree { position:relative; margin-top:26px; padding: 0 6px; }
+.landing-row { display:flex; justify-content:center; gap:14px; margin-bottom:18px; }
+.landing-card { background:#FFFDF9; border-radius:16px; padding:8px 8px 10px 8px; text-align:center; box-shadow:0 6px 16px rgba(62,46,34,0.22); width:78px; }
+.landing-card .lc-avatar { width:56px; height:56px; border-radius:12px; margin:0 auto 6px auto; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:white; font-weight:700; font-family:'Playfair Display', serif; }
+.landing-card .lc-name { font-size:0.72rem; font-weight:700; color:#3E2E22; white-space:nowrap; }
+.landing-card .lc-years { font-size:0.6rem; color:#9C8B76; }
+.landing-cta-wrap { text-align:center; margin: 22px 0 8px 0; }
+.landing-blurb { color:#7A6A57; font-size:0.9rem; max-width:380px; margin:0 auto 18px auto; line-height:1.5; }
+.landing-bottom-nav { display:flex; align-items:center; justify-content:space-around; background:#FFFDF9; border-radius:18px; padding:10px 4px; margin: 22px 4px 6px 4px; box-shadow:0 2px 10px rgba(62,46,34,0.06); border:1px solid #E6DAC5; }
+.landing-nav-item { display:flex; flex-direction:column; align-items:center; gap:2px; opacity:0.55; }
+.landing-nav-item.active { opacity:1; color:#A8532F; }
+.landing-nav-item span.icon { font-size:1.15rem; }
+.landing-nav-item span.label { font-size:0.62rem; font-weight:700; color:#7A6A57; }
+.landing-nav-item.active span.label { color:#A8532F; }
+</style>
+<div class="landing-wrap">
+<div class="landing-hero">
+<div class="landing-topbar">
+<span class="landing-menu-icon">☰</span>
+<span class="landing-gear-icon">⚙️</span>
+</div>
+<div class="landing-title-block">
+<div class="landing-title">Our Family Tree</div>
+<div class="landing-tag">Roots · Branches · Forever</div>
+</div>
+<div class="landing-tree">
+<div class="landing-row">
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#C97B52,#A8532F);">R</div><div class="lc-name">Rajesh</div><div class="lc-years">1948–</div></div>
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#D4A24C,#B9862F);">L</div><div class="lc-name">Lakshmi</div><div class="lc-years">1950–</div></div>
+</div>
+<div class="landing-row">
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#7D8C4A,#647239);">N</div><div class="lc-name">Nirmal</div><div class="lc-years">1979–</div></div>
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#B97A72,#9C5F58);">A</div><div class="lc-name">Anita</div><div class="lc-years">1982–</div></div>
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#8B5E3C,#6E4A2F);">K</div><div class="lc-name">Kiran</div><div class="lc-years">1985–</div></div>
+</div>
+<div class="landing-row">
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#7D8C4A,#647239);">N</div><div class="lc-name">Nilan</div><div class="lc-years">2019–</div></div>
+<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#C97B52,#A8532F);">A</div><div class="lc-name">Aanya</div><div class="lc-years">2021–</div></div>
+</div>
+</div>
+</div>
+<div class="landing-cta-wrap">
+<p class="landing-blurb">Every family has a story worth keeping. Explore your tree, add the people who matter, and watch it grow branch by branch.</p>
+</div>
+<div class="landing-bottom-nav">
+<div class="landing-nav-item active"><span class="icon">🌳</span><span class="label">Tree</span></div>
+<div class="landing-nav-item"><span class="icon">👥</span><span class="label">People</span></div>
+<div class="landing-nav-item"><span class="icon">📅</span><span class="label">Events</span></div>
+<div class="landing-nav-item"><span class="icon">🖼️</span><span class="label">Photos</span></div>
+<div class="landing-nav-item"><span class="icon">⋯</span><span class="label">More</span></div>
+</div>
+</div>
+""", unsafe_allow_html=True)
 
     if st.button("🌳 View Our Family Tree", use_container_width=True):
         st.session_state.seen_landing = True
