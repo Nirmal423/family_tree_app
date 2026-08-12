@@ -13,6 +13,60 @@ os.makedirs(PHOTO_DIR, exist_ok=True)
 st.set_page_config(page_title="Family Tree", layout="wide", page_icon="🌳", initial_sidebar_state="collapsed")
 
 # =========================================================
+# LOGIN GATE
+# =========================================================
+
+def check_password():
+    if st.session_state.get("authenticated"):
+        return True
+
+    st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+html, body, [class*="css"] { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+.stApp { background: linear-gradient(160deg, #F7EFE0 0%, #F0E4CE 100%); }
+#MainMenu, footer, header { visibility: hidden; }
+section[data-testid="stSidebar"] { display: none; }
+.login-wrap { text-align:center; padding: 70px 20px 10px 20px; }
+.login-icon { font-size:2.6rem; margin-bottom:6px; }
+.login-title { font-family:'Playfair Display', serif; font-weight:700; font-size:1.8rem; color:#3E2E22; }
+.login-sub { color:#7A6A57; font-size:0.9rem; margin-top:4px; margin-bottom:22px; }
+.stTextInput input {
+    color:#3E2E22 !important; background-color:#FFFFFF !important;
+    border:1.5px solid #E6DAC5 !important; border-radius:12px !important;
+}
+div.stButton > button {
+    background:linear-gradient(135deg, #C97B52, #A8532F) !important; color:white !important;
+    border:none !important; border-radius:12px !important; font-weight:700 !important;
+}
+</style>
+<div class="login-wrap">
+  <div class="login-icon">🌳</div>
+  <div class="login-title">Our Family Tree</div>
+  <div class="login-sub">This is a private family space. Enter the password to continue.</div>
+</div>
+""", unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        pw_secret = st.secrets.get("APP_PASSWORD") if hasattr(st, "secrets") else None
+        if not pw_secret:
+            st.warning("No app password has been set up yet. Add APP_PASSWORD in your Streamlit Cloud app's Secrets, then reload.")
+            return False
+
+        pw = st.text_input("Password", type="password", key="login_pw")
+        if st.button("Enter", use_container_width=True):
+            if pw == pw_secret:
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("That password isn't right — try again.")
+    return False
+
+if not check_password():
+    st.stop()
+
+# =========================================================
 # DATA LAYER
 # =========================================================
 
