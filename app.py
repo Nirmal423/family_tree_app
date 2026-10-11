@@ -537,7 +537,7 @@ def render_wizard():
                    ("Sibling", "sibling", "🧑‍🤝‍🧑"), ("Other", "other", "👤")]
         cards_html = '<div class="choice-grid">'
         for label, key, emoji in choices:
-            cards_html += f'<a class="choice-card" href="?action=add&rel={key}&for={target_id}"><span class="choice-emoji">{emoji}</span><span class="choice-label">{label}</span></a>'
+            cards_html += f'<a class="choice-card" target="_self" href="?action=add&rel={key}&for={target_id}"><span class="choice-emoji">{emoji}</span><span class="choice-label">{label}</span></a>'
         cards_html += '</div>'
         st.markdown(cards_html, unsafe_allow_html=True)
 
@@ -551,7 +551,7 @@ def render_wizard():
 
     back_href = f"?selected={for_param}" if editing else "?"
     st.markdown(f"""
-    <a href="{back_href}" style="display:inline-flex;align-items:center;gap:8px;color:white;
+    <a href="{back_href}" target="_self" style="display:inline-flex;align-items:center;gap:8px;color:white;
         text-decoration:none;font-size:1rem;font-weight:700;margin-bottom:16px;
         background:linear-gradient(135deg, var(--coral), var(--coral-deep));
         padding:12px 20px;border-radius:14px;box-shadow:0 4px 14px rgba(168,83,47,0.35);">
@@ -947,18 +947,18 @@ def render_profile_drawer(person_id):
     .drawer h4 {{ color:#3E2E22 !important; margin-top:20px; }}
     </style>
     <div class="drawer">
-      <a class="close-x" href="?">✕</a>
-      <a class="drawer-back" href="?">← Back to Family Tree</a>
+      <a class="close-x" target="_self" href="?">✕</a>
+      <a class="drawer-back" target="_self" href="?">← Back to Family Tree</a>
       <img class="avatar" src="{img}"/>
       <h2>{first} {last or ''}</h2>
       {details}
       {bio_html}
       <div class="drawer-actions">
-        <a href="?action=edit&for={pid}">✏️ Edit</a>
-        <a href="?action=add&rel=parent&for={pid}">+ Parent</a>
-        <a href="?action=add&rel=child&for={pid}">+ Child</a>
-        <a href="?action=add&rel=partner&for={pid}">+ Partner</a>
-        <a href="?action=add&rel=sibling&for={pid}">+ Sibling</a>
+        <a target="_self" href="?action=edit&for={pid}">✏️ Edit</a>
+        <a target="_self" href="?action=add&rel=parent&for={pid}">+ Parent</a>
+        <a target="_self" href="?action=add&rel=child&for={pid}">+ Child</a>
+        <a target="_self" href="?action=add&rel=partner&for={pid}">+ Partner</a>
+        <a target="_self" href="?action=add&rel=sibling&for={pid}">+ Sibling</a>
       </div>
       <h4>Family Connections</h4>
       {rel_html}
@@ -1142,9 +1142,9 @@ else:
         render_profile_drawer(selected_id)
 
     st.markdown("""
-    <a class="fab" href="?action=add">+</a>
+    <a class="fab" target="_self" href="?action=add">+</a>
     <div class="bottom-nav">
-      <a class="active" href="?"><span>🌳</span><span class="nav-label">Tree</span></a>
-      <a href="?action=add"><span>➕</span><span class="nav-label">Add</span></a>
+      <a class="active" target="_self" href="?"><span>🌳</span><span class="nav-label">Tree</span></a>
+      <a target="_self" href="?action=add"><span>➕</span><span class="nav-label">Add</span></a>
     </div>
     """, unsafe_allow_html=True)
