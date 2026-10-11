@@ -974,60 +974,132 @@ def render_landing_page():
     st.markdown("""
 <style>
 .landing-wrap { margin: -0.5rem -1rem 0 -1rem; }
+
 .landing-hero {
-    position:relative; min-height:340px; border-radius:0 0 32px 32px; overflow:hidden;
-    background: linear-gradient(180deg, rgba(35,28,18,0.15) 0%, rgba(35,28,18,0.55) 55%, #F7EFE0 100%), url('https://images.unsplash.com/photo-1508184964240-ee96bb9677a7?q=80&w=1200&auto=format&fit=crop') center/cover;
-    padding: 22px 20px 26px 20px; box-shadow:0 6px 24px rgba(62,46,34,0.18);
+    position:relative; overflow:hidden; border-radius:0 0 36px 36px;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(201,123,82,0.16) 0%, transparent 45%),
+        radial-gradient(circle at 85% 0%, rgba(125,140,74,0.14) 0%, transparent 50%),
+        linear-gradient(160deg, #FFFDF9 0%, #F7EFE0 60%, #F0E4CE 100%);
+    padding: 36px 22px 32px 22px;
+    box-shadow: 0 10px 30px rgba(62,46,34,0.10);
 }
-.landing-topbar { display:flex; align-items:flex-start; justify-content:space-between; color:white; }
-.landing-menu-icon, .landing-gear-icon { font-size:1.25rem; opacity:0.92; }
-.landing-title-block { text-align:center; margin-top:26px; }
-.landing-title { font-family:'Playfair Display', serif; font-weight:700; font-size:2rem; color:white; text-shadow:0 2px 10px rgba(0,0,0,0.35); }
-.landing-tag { color:#F3E8D6; font-size:0.85rem; letter-spacing:0.04em; margin-top:2px; }
-.landing-tree { position:relative; margin-top:26px; padding: 0 6px; }
-.landing-row { display:flex; justify-content:center; gap:14px; margin-bottom:18px; }
-.landing-card { background:#FFFDF9; border-radius:16px; padding:8px 8px 10px 8px; text-align:center; box-shadow:0 6px 16px rgba(62,46,34,0.22); width:78px; }
-.landing-card .lc-avatar { width:56px; height:56px; border-radius:12px; margin:0 auto 6px auto; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:white; font-weight:700; font-family:'Playfair Display', serif; }
-.landing-card .lc-name { font-size:0.72rem; font-weight:700; color:#3E2E22; white-space:nowrap; }
-.landing-card .lc-years { font-size:0.6rem; color:#9C8B76; }
-.landing-cta-wrap { text-align:center; margin: 22px 0 8px 0; }
-.landing-blurb { color:#7A6A57; font-size:0.9rem; max-width:380px; margin:0 auto 18px auto; line-height:1.5; }
-.landing-bottom-nav { display:flex; align-items:center; justify-content:space-around; background:#FFFDF9; border-radius:18px; padding:10px 4px; margin: 22px 4px 6px 4px; box-shadow:0 2px 10px rgba(62,46,34,0.06); border:1px solid #E6DAC5; }
+.landing-topbar { display:flex; align-items:center; justify-content:space-between; }
+.landing-brand { display:flex; align-items:center; gap:10px; }
+.landing-brand-icon {
+    width:40px; height:40px; border-radius:13px;
+    background:linear-gradient(135deg, var(--sky, #7D8C4A), #647239);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+    box-shadow:0 4px 12px rgba(100,114,57,0.3);
+}
+.landing-brand-name { font-family:'Playfair Display', serif; font-weight:700; font-size:1.05rem; color:#3E2E22; }
+.landing-gear-icon { font-size:1.1rem; opacity:0.5; color:#3E2E22; }
+
+.landing-title-block { text-align:center; margin-top:34px; }
+.landing-eyebrow {
+    display:inline-block; font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    color:#A8532F; background:#F3E0D3; padding:5px 14px; border-radius:999px; margin-bottom:14px;
+}
+.landing-title {
+    font-family:'Playfair Display', serif; font-weight:800; font-size:2.3rem; line-height:1.15;
+    color:#3E2E22; letter-spacing:-0.01em;
+}
+.landing-title .accent { color:#C97B52; font-style:italic; }
+.landing-tag { color:#7A6A57; font-size:0.95rem; max-width:360px; margin:12px auto 0 auto; line-height:1.5; }
+
+.landing-tree { position:relative; margin-top:36px; padding: 0 4px; }
+.landing-level { display:flex; justify-content:center; align-items:flex-start; gap:16px; margin-bottom:22px; position:relative; }
+.landing-card {
+    background:#FFFFFF; border-radius:18px; padding:10px 10px 12px 10px; text-align:center;
+    box-shadow:0 8px 20px rgba(62,46,34,0.10); width:84px; border:1px solid rgba(230,218,197,0.8);
+    transition: transform 0.2s ease;
+}
+.landing-card.center { transform: translateY(-6px) scale(1.04); }
+.landing-card .lc-avatar {
+    width:56px; height:56px; border-radius:50%; margin:0 auto 7px auto; display:flex; align-items:center;
+    justify-content:center; font-size:1.2rem; color:white; font-weight:700; font-family:'Playfair Display', serif;
+    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.12);
+}
+.landing-card .lc-name { font-size:0.74rem; font-weight:700; color:#3E2E22; white-space:nowrap; }
+.landing-card .lc-years { font-size:0.62rem; color:#9C8B76; margin-top:1px; }
+
+.landing-stats-row { display:flex; justify-content:center; gap:28px; margin-top:28px; }
+.landing-stat { text-align:center; }
+.landing-stat-num { font-family:'Playfair Display', serif; font-weight:800; font-size:1.4rem; color:#3E2E22; }
+.landing-stat-label { font-size:0.68rem; color:#9C8B76; font-weight:600; letter-spacing:0.02em; text-transform:uppercase; margin-top:2px; }
+
+.landing-cta-wrap { text-align:center; margin: 26px 0 4px 0; padding: 0 20px; }
+.landing-blurb { color:#7A6A57; font-size:0.9rem; max-width:380px; margin:0 auto 20px auto; line-height:1.55; }
+
+.landing-features { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin: 20px 6px 4px 6px; }
+.landing-feature {
+    background:#FFFDF9; border:1px solid #E6DAC5; border-radius:16px; padding:14px 8px; text-align:center;
+}
+.landing-feature .lf-icon { font-size:1.3rem; display:block; margin-bottom:6px; }
+.landing-feature .lf-label { font-size:0.68rem; font-weight:700; color:#3E2E22; line-height:1.3; }
+
+.landing-bottom-nav {
+    display:flex; align-items:center; justify-content:space-around; background:#FFFDF9; border-radius:18px;
+    padding:10px 4px; margin: 22px 4px 6px 4px; box-shadow:0 2px 10px rgba(62,46,34,0.06); border:1px solid #E6DAC5;
+}
 .landing-nav-item { display:flex; flex-direction:column; align-items:center; gap:2px; opacity:0.55; }
 .landing-nav-item.active { opacity:1; color:#A8532F; }
 .landing-nav-item span.icon { font-size:1.15rem; }
 .landing-nav-item span.label { font-size:0.62rem; font-weight:700; color:#7A6A57; }
 .landing-nav-item.active span.label { color:#A8532F; }
 </style>
+
 <div class="landing-wrap">
 <div class="landing-hero">
+
 <div class="landing-topbar">
-<span class="landing-menu-icon">☰</span>
-<span class="landing-gear-icon">⚙️</span>
+<div class="landing-brand">
+<div class="landing-brand-icon">🌿</div>
+<div class="landing-brand-name">Our Family Tree</div>
 </div>
+<div class="landing-gear-icon">⚙️</div>
+</div>
+
 <div class="landing-title-block">
-<div class="landing-title">Our Family Tree</div>
-<div class="landing-tag">Roots · Branches · Forever</div>
+<div class="landing-eyebrow">Private Family Space</div>
+<div class="landing-title">Every story,<br/>every <span class="accent">branch</span>, in one place</div>
+<div class="landing-tag">A living record of who we are — the people, the stories, and the connections between them.</div>
 </div>
+
 <div class="landing-tree">
-<div class="landing-row">
+<div class="landing-level">
 <div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#C97B52,#A8532F);">R</div><div class="lc-name">Rajesh</div><div class="lc-years">1948–</div></div>
 <div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#D4A24C,#B9862F);">L</div><div class="lc-name">Lakshmi</div><div class="lc-years">1950–</div></div>
 </div>
-<div class="landing-row">
+<div class="landing-level">
 <div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#7D8C4A,#647239);">N</div><div class="lc-name">Nirmal</div><div class="lc-years">1979–</div></div>
-<div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#B97A72,#9C5F58);">A</div><div class="lc-name">Anita</div><div class="lc-years">1982–</div></div>
+<div class="landing-card center"><div class="lc-avatar" style="background:linear-gradient(135deg,#B97A72,#9C5F58);">A</div><div class="lc-name">Anita</div><div class="lc-years">1982–</div></div>
 <div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#8B5E3C,#6E4A2F);">K</div><div class="lc-name">Kiran</div><div class="lc-years">1985–</div></div>
 </div>
-<div class="landing-row">
+<div class="landing-level">
 <div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#7D8C4A,#647239);">N</div><div class="lc-name">Nilan</div><div class="lc-years">2019–</div></div>
 <div class="landing-card"><div class="lc-avatar" style="background:linear-gradient(135deg,#C97B52,#A8532F);">A</div><div class="lc-name">Aanya</div><div class="lc-years">2021–</div></div>
 </div>
 </div>
+
+<div class="landing-stats-row">
+<div class="landing-stat"><div class="landing-stat-num">7</div><div class="landing-stat-label">Members</div></div>
+<div class="landing-stat"><div class="landing-stat-num">3</div><div class="landing-stat-label">Generations</div></div>
+<div class="landing-stat"><div class="landing-stat-num">1</div><div class="landing-stat-label">Family Tree</div></div>
 </div>
+
+</div>
+
 <div class="landing-cta-wrap">
-<p class="landing-blurb">Every family has a story worth keeping. Explore your tree, add the people who matter, and watch it grow branch by branch.</p>
+<p class="landing-blurb">Add the people who matter, link them to the family, and watch your tree grow branch by branch.</p>
 </div>
+
+<div class="landing-features">
+<div class="landing-feature"><span class="lf-icon">🌳</span><span class="lf-label">Visual Tree</span></div>
+<div class="landing-feature"><span class="lf-icon">📖</span><span class="lf-label">Stories & Bios</span></div>
+<div class="landing-feature"><span class="lf-icon">🔒</span><span class="lf-label">Private & Secure</span></div>
+</div>
+
 <div class="landing-bottom-nav">
 <div class="landing-nav-item active"><span class="icon">🌳</span><span class="label">Tree</span></div>
 <div class="landing-nav-item"><span class="icon">👥</span><span class="label">People</span></div>
