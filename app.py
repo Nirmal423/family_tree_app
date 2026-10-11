@@ -535,11 +535,15 @@ def render_wizard():
 
         choices = [("Parent", "parent", "🧓"), ("Child", "child", "👶"), ("Partner", "partner", "💍"),
                    ("Sibling", "sibling", "🧑‍🤝‍🧑"), ("Other", "other", "👤")]
-        cards_html = '<div class="choice-grid">'
-        for label, key, emoji in choices:
-            cards_html += f'<a class="choice-card" target="_self" href="?action=add&rel={key}&for={target_id}"><span class="choice-emoji">{emoji}</span><span class="choice-label">{label}</span></a>'
-        cards_html += '</div>'
-        st.markdown(cards_html, unsafe_allow_html=True)
+        cols = st.columns(len(choices))
+        for col, (label, key, emoji) in zip(cols, choices):
+            with col:
+                if st.button(f"{emoji}\n{label}", key=f"choice_{key}", use_container_width=True):
+                    st.query_params.clear()
+                    st.query_params["action"] = "add"
+                    st.query_params["rel"] = key
+                    st.query_params["for"] = str(target_id)
+                    st.rerun()
 
         if st.button("← Cancel"):
             st.query_params.clear()
@@ -549,15 +553,11 @@ def render_wizard():
     label_map = {"parent": "Add a Parent", "child": "Add a Child", "partner": "Add a Partner",
                  "sibling": "Add a Sibling", "other": "Add a Family Member", None: "Add Yourself"}
 
-    back_href = f"?selected={for_param}" if editing else "?"
-    st.markdown(f"""
-    <a href="{back_href}" target="_self" style="display:inline-flex;align-items:center;gap:8px;color:white;
-        text-decoration:none;font-size:1rem;font-weight:700;margin-bottom:16px;
-        background:linear-gradient(135deg, var(--coral), var(--coral-deep));
-        padding:12px 20px;border-radius:14px;box-shadow:0 4px 14px rgba(168,83,47,0.35);">
-      ← Back to Family Tree
-    </a>
-    """, unsafe_allow_html=True)
+    if st.button("← Back to Family Tree", key="wizard_back_btn"):
+        st.query_params.clear()
+        if editing:
+            st.query_params["selected"] = str(for_param)
+        st.rerun()
 
     if editing and edit_person:
         edit_name = f"{edit_person[1]} {edit_person[2] or ''}".strip()
@@ -947,24 +947,55 @@ def render_profile_drawer(person_id):
     .drawer h4 {{ color:#3E2E22 !important; margin-top:20px; }}
     </style>
     <div class="drawer">
-      <a class="close-x" target="_self" href="?">✕</a>
-      <a class="drawer-back" target="_self" href="?">← Back to Family Tree</a>
       <img class="avatar" src="{img}"/>
       <h2>{first} {last or ''}</h2>
       {details}
       {bio_html}
-      <div class="drawer-actions">
-        <a target="_self" href="?action=edit&for={pid}">✏️ Edit</a>
-        <a target="_self" href="?action=add&rel=parent&for={pid}">+ Parent</a>
-        <a target="_self" href="?action=add&rel=child&for={pid}">+ Child</a>
-        <a target="_self" href="?action=add&rel=partner&for={pid}">+ Partner</a>
-        <a target="_self" href="?action=add&rel=sibling&for={pid}">+ Sibling</a>
-      </div>
       <h4>Family Connections</h4>
       {rel_html}
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
+
+    drawer_cols = st.columns(6)
+    with drawer_cols[0]:
+        if st.button("✕ Close", key="drawer_close"):
+            st.query_params.clear()
+            st.rerun()
+    with drawer_cols[1]:
+        if st.button("✏️ Edit", key="drawer_edit"):
+            st.query_params.clear()
+            st.query_params["action"] = "edit"
+            st.query_params["for"] = str(pid)
+            st.rerun()
+    with drawer_cols[2]:
+        if st.button("+ Parent", key="drawer_add_parent"):
+            st.query_params.clear()
+            st.query_params["action"] = "add"
+            st.query_params["rel"] = "parent"
+            st.query_params["for"] = str(pid)
+            st.rerun()
+    with drawer_cols[3]:
+        if st.button("+ Child", key="drawer_add_child"):
+            st.query_params.clear()
+            st.query_params["action"] = "add"
+            st.query_params["rel"] = "child"
+            st.query_params["for"] = str(pid)
+            st.rerun()
+    with drawer_cols[4]:
+        if st.button("+ Partner", key="drawer_add_partner"):
+            st.query_params.clear()
+            st.query_params["action"] = "add"
+            st.query_params["rel"] = "partner"
+            st.query_params["for"] = str(pid)
+            st.rerun()
+    with drawer_cols[5]:
+        if st.button("+ Sibling", key="drawer_add_sibling"):
+            st.query_params.clear()
+            st.query_params["action"] = "add"
+            st.query_params["rel"] = "sibling"
+            st.query_params["for"] = str(pid)
+            st.rerun()
 
 # =========================================================
 # LANDING PAGE (static preview screen, shown once per session)
@@ -1142,9 +1173,14 @@ else:
         render_profile_drawer(selected_id)
 
     st.markdown("""
-    <a class="fab" target="_self" href="?action=add">+</a>
     <div class="bottom-nav">
-      <a class="active" target="_self" href="?"><span>🌳</span><span class="nav-label">Tree</span></a>
-      <a target="_self" href="?action=add"><span>➕</span><span class="nav-label">Add</span></a>
+      <a class="active" href="#"><span>🌳</span><span class="nav-label">Tree</span></a>
     </div>
     """, unsafe_allow_html=True)
+
+    st.markdown('<div class="fab-btn-wrap">', unsafe_allow_html=True)
+    if st.button("➕", key="fab_add_button"):
+        st.query_params.clear()
+        st.query_params["action"] = "add"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
